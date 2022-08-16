@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+        box-sizing: border-box;
+        font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .input_page, .input_limit, .button, .label {
+        margin: 10px;
+        }
+
+        .output {
+        display: flex;
+        flex-wrap: wrap; 
+        margin-top: 10px;
+        }
+
+        .card {
+        width: 200px;
+        height: 150px;
+        display: block;
+        background-size: cover;
+        }
+
+        .cards {
+        margin: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <label for="input_page" class="label">Номер страницы</label>
+    <input type="text" id="input_page" placeholder="Введите число от 1 до 10" class="input_page">
+    <br>
+    <label for="input_limit" class="label">Лимит</label>
+    <input type="text" id="input_limit" placeholder="Введите число от 1 до 10" class="input_limit">
+    <br>
+    <button class="button">Запрос</button>
+    <div class="output"></div>
+    
+    
+    <script>
+let button = document.querySelector('.button');
+let output = document.querySelector('.output');
+let inputPage = document.querySelector('.input_page');
+let inputLimit = document.querySelector('.input_limit');
+
+function useRequest (url) {
+    return fetch(url)
+        .then((response) => {
+          let result = response.json();
+          return result;
+        })
+        .then((result) => {
+          console.log(result);
+          return result;
+        })
+        .catch(() => {output.innerHTML = `Ошибка запроса!`})
+}
+
+button.addEventListener('click', async function() {
+    if ((+inputPage.value < 1 || +inputPage.value > 10) && (+inputLimit.value < 1 || +inputLimit.value > 10)) {
+        output.innerHTML = 'Номер страницы и лимит вне диапазона от 1 до 10';
+        // console.log('Номер страницы и лимит вне диапазона от 1 до 10');
+    }
+    else { 
+      if (+inputPage.value < 1 || +inputPage.value > 10) {
+        output.innerHTML = 'Номер страницы вне диапазона от 1 до 10';
+        // console.log('Номер страницы и лимит вне диапазона от 1 до 10');
+      }
+      if (+inputLimit.value < 1 || +inputLimit.value > 10) {
+          output.innerHTML = 'Лимит вне диапазона от 1 до 10';
+          // console.log('Номер страницы и лимит вне диапазона от 1 до 10');
+      }
+      if (+inputPage.value >= 1 && +inputPage.value <= 10 && +inputLimit.value >= 1 && +inputLimit.value <= 10) {
+          let result = await useRequest(`https://picsum.photos/v2/list?page=${+inputPage.value}&limit=${+inputLimit.value}`);
+          displayResult (result);
+      }
+    }
+})  
+
+function displayResult (result) {
+  let cards = '';
+  result.forEach(function(item) {
+    let card = `
+    <div class="cards">
+      <div class="card" style="background-image: url(${item.download_url})"></div>
+      <p>${item.author}</p>
+    </div>
+    `;
+    cards += card;
+  })
+  output.innerHTML = cards;
+  localStorage.setItem('cards', cards);
+  localStorage.setItem('page', inputPage.value);
+  localStorage.setItem('limit', inputLimit.value);
+}
+
+function getPrevious () {
+    let previousCards = localStorage.getItem('cards');
+    let previousPage = localStorage.getItem('page');
+    let previousLimit = localStorage.getItem('limit');
+    if (previousCards) {
+        output.innerHTML = previousCards;
+        inputPage.value = previousPage;
+        inputLimit.value = previousLimit;
+
+    }
+}
+
+
+document.addEventListener("DOMContentLoaded", getPrevious);
+
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+

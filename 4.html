@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .output {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        
+       
+    </style>
+</head>
+<body>
+    <input type="text" placeholder="Введите ширину изображения от 100 до 300" class="input_width">
+    <input type="text" placeholder="Введите высоту изображения от 100 до 300" class="input_height">
+    <button class="button">Отправить запрос</button>
+    <div class="output"></div>
+    
+    
+    <script>
+let button = document.querySelector('.button');
+let output = document.querySelector('.output');
+let inputWidth = document.querySelector('.input_width');
+let inputHeigth = document.querySelector('.input_height');
+let url = 'https://picsum.photos';
+
+function useRequest (url) {
+    return fetch(url)
+        .then((response) => {
+          // displayResult(response); // если передавать в displayResult отсюда, то без async/await
+          // output.innerHTML = `<img src="${response.url}">`; // можно вообще без передачи в функцию
+          return response;
+          
+        })
+        .catch(() => {output.innerHTML = `Ошибка!`})
+}
+
+button.addEventListener('click', async function() {
+    if (+inputWidth.value >= 100 && +inputWidth.value <= 300 && +inputHeigth.value >= 100 && +inputHeigth.value <= 300) {
+        let result = await useRequest(url+ "/" + inputWidth.value + "/" + inputHeigth.value);
+        displayResult (result); // если передавать в displayResult отсюда, нужны ключевые слова async/await
+    } else {
+        output.innerHTML = 'Oдно из чисел вне диапазона от 100 до 300';
+    }
+})
+
+function displayResult (apiData) {
+    let img = `<img src="${apiData.url}">`;
+    output.innerHTML = img;
+}
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
